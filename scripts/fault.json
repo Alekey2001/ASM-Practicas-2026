@@ -1,0 +1,27 @@
+[
+  {
+    "email": "alejandro.rodriguez@aiaco.local",
+    "password_md5": "4d186321c1a7f0f354b297e8914ab240",
+    "password_plain": null
+  },
+  {
+    "email": "laura.garcia@aiaco.local",
+    "password_md5": "7c6a180b36896a0a8c02787eeafb0e4c",
+    "password_plain": "Aiaco2024!"
+  },
+  {
+    "email": "miguel.lopez@aiaco.local",
+    "password_md5": "5f4dcc3b5aa765d61d8327deb882cf99",
+    "password_plain": "password"
+  },
+  {
+    "email": "fernanda.silva@aiaco.local",
+    "password_md5": "21232f297a57a5a743894a0e4a801fc3",
+    "password_plain": null
+  },
+  {
+    "email": "juan.torres@aiaco.local",
+    "password_md5": "e10adc3949ba59abbe56e057f20f883e",
+    "password_plain": "123456"
+  }
+]
