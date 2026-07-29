@@ -1,0 +1,1 @@
+DevOps Engineer especializado en AWS, Docker y GitHub Actions. Administro pipelines CI/CD para ambientes de desarrollo y staging. Trabajo con instancias EC2 Ubuntu y automatización mediante Ansible. Actualmente colaboro en la modernización de varios servicios heredados y documentación de infraestructura.

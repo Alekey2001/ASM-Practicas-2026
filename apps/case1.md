@@ -1,0 +1,1 @@
+Backend Developer apasionado por APIs REST y microservicios. Desarrollo soluciones en Python y Node.js. Colaboro con equipos de QA y Seguridad para mejorar la calidad del software y participar en revisiones de código, pruebas automatizadas y despliegues continuos sobre infraestructura en la nube.
