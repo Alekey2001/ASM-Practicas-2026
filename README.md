@@ -48,6 +48,7 @@ Para garantizar orden, calidad y un estándar profesional, el desarrollo de este
 
 *   [x] **Sprint 1 (Semana 1):** Configuración del entorno de trabajo, establecimiento del tablero Trello, estructuración del repositorio en GitHub y definición del alcance simulado.
 *   [x] **Sprint 2 (Semana 2):** Inicio de la fase de reconocimiento pasivo y recolección de huella digital mapeo web . *(En progreso)*
+*   [x] **Sprint 3 (Semana 3):** Inicio de mapeo de reconocimiento de emails y base de datos corporativos con laboratorio y entorno controlado resolviendo un caso real de hackeo y fuga de datos  *
 
 ---
 
