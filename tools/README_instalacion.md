@@ -45,3 +45,30 @@ Utilizado para conocer frameworks, CMS, lenguajes, librerías y hosting del siti
 Utilizado para evaluar de forma pasiva la presencia y calidad de las cabeceras HTTP de seguridad (como HSTS, CSP, X-Frame-Options).
 *   **Instalación:** No requiere instalación.
 *   **Uso:** Herramienta basada en web. Se accede directamente navegando a `https://securityheaders.com` e ingresando la URL del objetivo.
+# 🛠️ Infraestructura, Entorno y Herramientas del Laboratorio
+
+Este documento especifica la pila tecnológica, la estructura de archivos y las herramientas utilizadas durante el desarrollo del laboratorio de **Seguridad de Correos y Credenciales Corporativas**.
+
+---
+
+## 💻 1. Arquitectura del Entorno de Pruebas
+
+* **Sistema Operativo Anfitrión:** Windows 10 Pro
+* **Consola de Comandos:** Windows PowerShell
+* **Capa de Virtualización / Subsistema:** WSL2 (Ubuntu Linux)
+* **Motor de Contenedores:** Docker Desktop (Docker Engine / Docker Compose)
+* **Gestor de Base de Datos:** MySQL 8.0 (Ejecutándose en contenedor aislado)
+* **IDE / Editor de Código:** Visual Studio Code
+
+---
+
+## 📂 2. Estructura del Proyecto (`emailscorp/`)
+
+```text
+emailscorp/
+│
+├── docker-compose.yml          # Definición del contenedor MySQL 8.0 y volúmenes
+├── aiaco_corporate_emails.csv  # Fuente de datos cruda de correos corporativos
+├── case1.md                    # Documentación y análisis del caso de estudio
+└── mysql/
+      └── init.sql              # Script SQL de creación de DB e inserción de datos

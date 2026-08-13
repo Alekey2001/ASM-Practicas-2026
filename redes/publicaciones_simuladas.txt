@@ -1,70 +1,29 @@
-==========================================================
-AIACO CORP
-SIMULACIÓN DE PUBLICACIONES EN REDES SOCIALES
-VECTOR: REDES SOCIALES / OSINT
-==========================================================
+# 🕵️ [ASM-04] Reconocimiento Pasivo, Indexación y Google Dorking (OSINT)
 
-Estas publicaciones son completamente ficticias y fueron
-creadas únicamente con fines académicos para un laboratorio
-de Attack Surface Management.
+**Proyecto:** AIACO Corp – Attack Surface Management (ASM)  
+**Módulo:** Mapeo de Fuentes Abiertas (OSINT) e Identificación de Contenido Expuesto  
+**Fuente de Conocimiento:** Laboratorio Práctico TryHackMe (Google Dorking) & Análisis de Dominio
 
-----------------------------------------------------------
-Publicación 1
-Cargo: Desarrollador Full Stack
-Red social: LinkedIn
-----------------------------------------------------------
+---
 
-¡Terminamos otra semana de despliegues en AIACO Corp!
+## 📐 1. Arquitectura de Funciones: Motores de Búsqueda y Crawling
 
-Acabamos de actualizar varios servicios internos y ya estamos
-trabajando con React, Node.js y Vite para nuestros nuevos
-proyectos. También estamos migrando parte de nuestra
-infraestructura hacia AWS utilizando contenedores Docker y
-GitHub Actions para automatizar los despliegues.
+Para auditar la información expuesta en fuentes abiertas, es fundamental comprender cómo los motores de búsqueda recopilan y almacenan los activos web.
 
-Muy emocionado por seguir aprendiendo DevSecOps.
-
-Riesgo de Oversharing:
-- Revela tecnologías utilizadas.
-- Revela proveedor Cloud.
-- Revela herramientas del pipeline CI/CD.
-
-----------------------------------------------------------
-Publicación 2
-Cargo: Administrador de Sistemas
-Red social: X
-----------------------------------------------------------
-
-Semana intensa. Hoy estuvimos revisando nuestros servidores
-Linux y fortaleciendo la seguridad mediante SSH, Fail2Ban,
-Security Groups y monitoreo centralizado. Todo funcionando
-correctamente después de la actualización de mantenimiento.
-
-Seguimos mejorando la postura de seguridad.
-
-Riesgo de Oversharing:
-- Expone herramientas defensivas.
-- Sugiere la arquitectura de administración.
-- Facilita el reconocimiento tecnológico.
-
-----------------------------------------------------------
-Publicación 3
-Cargo: Analista de Soporte TI
-Red social: LinkedIn
-----------------------------------------------------------
-
-Hoy ayudé a varios usuarios con problemas relacionados con
-nuestros sistemas internos y aplicaciones corporativas.
-Excelente experiencia trabajando con distintos equipos para
-resolver incidencias y mantener la continuidad operativa.
-
-¡Siempre aprendiendo algo nuevo!
-
-Riesgo de Oversharing:
-- Describe procesos internos.
-- Permite inferir funciones y responsabilidades.
-- Ayuda a perfilar posibles objetivos para ingeniería social.
-
-==========================================================
-FIN DEL DOCUMENTO
-==========================================================
+```text
+       [ INTERNET ]
+            │
+            ▼
+     ┌─────────────┐
+     │   Crawler   │ ──> (Descubre: Palabras clave, URLs, archivos, enlaces)
+     └─────────────┘
+            │
+            ▼
+     ┌─────────────┐
+     │    Index    │ ──> (Almacena y organiza las ubicaciones encontradas)
+     └─────────────┘
+            │
+            ▼
+  ┌──────────────────┐
+  │ Search Engine UI │ ──> (Procesa consultas del usuario sobre el índice)
+  └──────────────────┘

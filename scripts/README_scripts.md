@@ -60,3 +60,93 @@ dir: Indica que se utilizará el modo de enumeración de directorios/URIs.
 -u https://aiaco.netlify.app: URL objetivo a analizar.
 
 -w /usr/share/wordlists/dirb/common.txt: Especifica la ruta completa del diccionario utilizado (common.txt de DIRB en Kali Linux).
+```markdown
+# 💻 Comandos, Consultas SQL y Casos de Estudio (Email Security)
+
+Este documento contiene el registro de los comandos de administración de contenedores y todas las consultas SQL ejecutadas para el diagnóstico, clasificación, estadistas y remediación de la base de datos `aiaco`.
+
+---
+
+## 🐳 1. Comandos de Administración y Contenedores (Docker / WSL2)
+
+```bash
+# Verificación del estado de WSL2
+wsl -l -v
+
+# Validar estado del motor Docker y contenedores activos
+docker version
+docker compose version
+docker ps
+
+# Despliegue del entorno de laboratorio
+docker compose up -d
+
+# Inspección de logs de inicialización de la base de datos
+docker logs aiaco_mysql
+
+# Acceso interactivo a la consola de MySQL dentro del contenedor
+docker exec -it aiaco_mysql mysql -u root -p
+📊 2. Consultas SQL de Diagnóstico y Clasificación
+Selección de base de datos e inspección inicial
+SQL
+SHOW DATABASES;
+USE aiaco;
+SHOW TABLES;
+SELECT * FROM leaked_credentials;
+Identificación de credenciales en texto plano
+SQL
+SELECT email, password_plain 
+FROM leaked_credentials 
+WHERE password_plain IS NOT NULL;
+Búsqueda de contraseñas extremadamente débiles
+SQL
+SELECT email, password_plain 
+FROM leaked_credentials 
+WHERE password_plain IN ('password', '123456', 'admin', 'qwerty');
+Identificación de usuarios con almacenamiento de hash
+SQL
+SELECT email, password_md5 
+FROM leaked_credentials 
+WHERE password_plain IS NULL;
+Clasificación dinámica del nivel de riesgo
+SQL
+SELECT email,
+  CASE 
+    WHEN password_plain IS NOT NULL THEN 'CRITICO'
+    ELSE 'MEDIO'
+  END AS nivel_riesgo
+FROM leaked_credentials;
+Conteo estadístico general
+SQL
+SELECT 
+  COUNT(*) AS total_usuarios,
+  SUM(password_plain IS NOT NULL) AS texto_plano,
+  SUM(password_plain IS NULL) AS solo_hash
+FROM leaked_credentials;
+Análisis de dominios corporativos
+SQL
+SELECT 
+  SUBSTRING_INDEX(email, '@', -1) AS dominio,
+  COUNT(*) AS total
+FROM leaked_credentials
+GROUP BY dominio;
+
+
+🛠️ 3. Scripts SQL de Remediación y Validación
+Creación de tabla de respaldo y saneamiento
+SQL
+-- Creación de la tabla de respaldo
+CREATE TABLE leaked_credentials_backup AS SELECT * FROM leaked_credentials;
+
+-- Eliminación de contraseñas en texto plano
+UPDATE leaked_credentials_backup 
+SET password_plain = NULL 
+WHERE password_plain IS NOT NULL;
+Validaciones post-remediación
+SQL
+-- Comprobar que no existan datos en texto plano (Resultado esperado: Empty set)
+SELECT * FROM leaked_credentials_backup WHERE password_plain IS NOT NULL;
+
+-- Confirmar la conservación de la totalidad de los usuarios (Resultado esperado: 5)
+SELECT COUNT(*) FROM leaked_credentials_backup;
+
