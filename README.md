@@ -11,7 +11,7 @@
 | 🎓 **Formación** | Técnico Superior Universitario (TSU) en **Seguridad Informática** — Universidad ONMEX (RVOE 2894) |
 | 🎯 **Perfil objetivo** | **Consultor Jr. de Ciberseguridad** · **Analista DevSecOps** · **SOC Nivel 1** |
 | 🏢 **Proyecto** | Prácticas Profesionales — **Attack Surface Management (ASM)** para **AICO** |
-| 📬 **Contacto** | `[tu-correo]` · `[tu-LinkedIn]` |
+| 📬 **Contacto** | acuartnest@gmail.com · https://www.linkedin.com/in/jesusalexandrorodriguez/ |
 
 ---
 
