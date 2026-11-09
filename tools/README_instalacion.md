@@ -1,74 +1,64 @@
-# ⚙️ Guía de Entorno e Instalación de Herramientas
+# Preparación del entorno de laboratorio
 
-Este documento detalla el entorno de trabajo utilizado para la práctica de Attack Surface Management (ASM) y el paso a paso de verificación e instalación de las herramientas de auditoría.
+[Inicio](../README.md) · [Scripts y consultas](../scripts/README_scripts.md).
 
-## 💻 Entorno Utilizado
-*   **Máquina Principal (Host):** Windows
-*   **Máquina Virtual (Auditoría):** Kali Linux
-*   **Objetivo Auditado:** `https://aiaco.netlify.app`
+## Entornos históricos
 
----
+El material documenta Windows, Kali Linux en VM y WSL2/Ubuntu para ejercicios diferentes. Los informes mencionan distintas ediciones de Windows; no se presume que todas las capturas provengan de una única instalación. Nmap, Gobuster, Wappalyzer, SecurityHeaders y MobSF son herramientas usadas en los casos; sus versiones históricas no equivalen a recomendaciones actuales de instalación.
 
-## 🛠️ Herramientas y Proceso de Instalación
+La comprobación de cabeceras mediante un servicio web puede generar tráfico al activo. No se ejecutó reconocimiento externo durante esta revisión. Los comandos históricos se conservan en la [guía de scripts](../scripts/README_scripts.md).
 
-Las pruebas requirieron cuatro herramientas principales. A continuación, se detalla el proceso de preparación en la terminal de Kali Linux:
+## MySQL local: preparar secretos
 
-### 1. Nmap (Mapeo de Redes y Puertos)
-Nmap se utiliza para descubrir puertos abiertos, servicios, versiones y encabezados HTTP. En Kali Linux viene preinstalado.
-*   **Comando de verificación:**
-    ```bash
-    nmap --version
-    ```
-*   **Resultado esperado:**
-    ```text
-    Nmap version 7.95
-    ```
+Requisitos: Docker con Compose y un motor local disponible. Desde la raíz, en PowerShell:
 
-### 2. Gobuster (Descubrimiento de Contenido)
-Gobuster se utiliza para realizar fuerza bruta sobre directorios y archivos web buscando recursos ocultos.
-*   **Comando de verificación previa:**
-    ```bash
-    gobuster version
-    ```
-*   **Proceso de instalación (si no está presente):**
-    ```bash
-    sudo apt update
-    sudo apt install gobuster
-    ```
-*   *Nota:* Tras la instalación, se vuelve a ejecutar `gobuster version` para asegurar que el binario está listo para ejecutarse.
+```powershell
+# Crear .env únicamente si todavía no existe.
+if (-not (Test-Path -LiteralPath 'emailscorp/.env')) {
+    Copy-Item -LiteralPath 'emailscorp/.env.example' -Destination 'emailscorp/.env'
+}
+```
 
-### 3. Wappalyzer (Fingerprinting Tecnológico)
-Utilizado para conocer frameworks, CMS, lenguajes, librerías y hosting del sitio web analizado.
-*   **Instalación:** No se realiza mediante terminal. Se instaló directamente como **Extensión desde la Chrome Web Store** en el navegador del entorno de trabajo.
+Editar el archivo local y reemplazar los dos marcadores por secretos exclusivos del laboratorio. El [.env.example](../emailscorp/.env.example) contiene valores ficticios, no credenciales listas para usar. Mantener comillas simples alrededor de valores con `$` o `#`. El [.gitignore](../.gitignore) excluye el archivo local, pero no borra secretos de archivos ya seguidos o del historial.
 
-### 4. SecurityHeaders (Evaluación de Cabeceras)
-Utilizado para evaluar de forma pasiva la presencia y calidad de las cabeceras HTTP de seguridad (como HSTS, CSP, X-Frame-Options).
-*   **Instalación:** No requiere instalación.
-*   **Uso:** Herramienta basada en web. Se accede directamente navegando a `https://securityheaders.com` e ingresando la URL del objetivo.
-# 🛠️ Infraestructura, Entorno y Herramientas del Laboratorio
+```powershell
+docker compose --env-file emailscorp/.env -f emailscorp/docker-compose.yml config --quiet
+docker compose --env-file emailscorp/.env -f emailscorp/docker-compose.yml up -d
+docker compose --env-file emailscorp/.env -f emailscorp/docker-compose.yml ps
+docker compose --env-file emailscorp/.env -f emailscorp/docker-compose.yml logs mysql
+docker compose --env-file emailscorp/.env -f emailscorp/docker-compose.yml exec mysql mysql -u root -p
+```
 
-Este documento especifica la pila tecnológica, la estructura de archivos y las herramientas utilizadas durante el desarrollo del laboratorio de **Seguridad de Correos y Credenciales Corporativas**.
+La contraseña se solicita de forma interactiva. El servicio expone `127.0.0.1:3307`, no todas las interfaces del host. El script de inicialización se monta en solo lectura y se ejecuta automáticamente solo si el directorio de datos está vacío. El volumen nombrado conserva los datos.
 
----
+**Volúmenes existentes:** cambiar `.env` no cambia las contraseñas ya guardadas por MySQL. La rotación debe hacerse de forma deliberada en esa instancia; no borrar el volumen para forzarla. No ejecutar el fixture con `DROP TABLE` sobre datos que se necesiten conservar.
 
-## 💻 1. Arquitectura del Entorno de Pruebas
+Detener el laboratorio manteniendo el volumen:
 
-* **Sistema Operativo Anfitrión:** Windows 10 Pro
-* **Consola de Comandos:** Windows PowerShell
-* **Capa de Virtualización / Subsistema:** WSL2 (Ubuntu Linux)
-* **Motor de Contenedores:** Docker Desktop (Docker Engine / Docker Compose)
-* **Gestor de Base de Datos:** MySQL 8.0 (Ejecutándose en contenedor aislado)
-* **IDE / Editor de Código:** Visual Studio Code
+```powershell
+docker compose --env-file emailscorp/.env -f emailscorp/docker-compose.yml down
+```
 
----
+No añadir `--volumes` a ese comando si se quieren preservar los datos. Las contraseñas sintéticas de la tabla son material del ejercicio, distinto de los secretos del servicio MySQL.
 
-## 📂 2. Estructura del Proyecto (`emailscorp/`)
+## MailHog local, opcional
 
-```text
-emailscorp/
-│
-├── docker-compose.yml          # Definición del contenedor MySQL 8.0 y volúmenes
-├── aiaco_corporate_emails.csv  # Fuente de datos cruda de correos corporativos
-├── case1.md                    # Documentación y análisis del caso de estudio
-└── mysql/
-      └── init.sql              # Script SQL de creación de DB e inserción de datos
+```powershell
+docker compose -f scripts/docker-compose.yml config --quiet
+docker compose -f scripts/docker-compose.yml up -d
+docker compose -f scripts/docker-compose.yml down
+```
+
+SMTP escucha en `127.0.0.1:1025` y la interfaz en `127.0.0.1:8025`. MailHog usa almacenamiento en memoria: al recrear o detener el proceso se pueden perder mensajes del ejercicio. Se conserva la etiqueta histórica `latest`; fijar una versión o digest probado queda pendiente. No se inició este servicio durante la revisión.
+
+## Archivos y datos
+
+| Recurso | Propósito |
+|---|---|
+| [Compose MySQL](../emailscorp/docker-compose.yml) | Servicio y volumen de laboratorio |
+| [Fixture SQL](../emailscorp/mysql/init.sql) | Datos vulnerables intencionales de inicialización |
+| [Saneamiento de copia](../emailscorp/mysql/sanitize_copy.sql) | Ejercicio reproducible sin modificar la tabla original |
+| [Generador](../scripts/email.py) | CSV sintético, con semilla y reemplazo explícitos |
+| [Caso de identidades](../emailscorp/case1.md) | Evidencia y límites de remediación |
+
+El generador y sus pruebas usan únicamente la biblioteca estándar de Python. Las herramientas de revisión de PDF requieren `pypdf`; las de OCR y anonimización usan Windows y .NET. No son dependencias de los laboratorios.

@@ -1,3 +1,6 @@
+-- Fixture exclusivamente sintético aiaco.local. Contraseñas débiles intencionales.
+-- Solo inicialización de un volumen vacío: DROP TABLE destruye una tabla existente.
+-- Para sanear una copia sin tocar el original, usar sanitize_copy.sql.
 CREATE DATABASE IF NOT EXISTS aiaco;
 
 USE aiaco;

@@ -157,3 +157,9 @@ No se encontraron evidencias suficientes de compromiso de la infraestructura.
 Sin embargo, el caso permitió identificar una debilidad importante en los procedimientos operativos: la falta de notificación previa al equipo de seguridad.
 
 Por lo tanto, aunque el evento fue cerrado como falso positivo, se recomienda mejorar los procesos de comunicación y gestión de cambios para reducir futuras alertas innecesarias y facilitar la correlación entre las actividades administrativas y los eventos de seguridad.
+
+## 13. Contexto de laboratorio y trazabilidad
+
+Este relato corresponde a un ejercicio educativo sobre AWS y conserva la clasificación del autor. Las capturas muestran actividad del sistema; no prueban por sí solas la identidad de quien operaba la cuenta ni la existencia de un proceso organizacional formal. No se atribuye un compromiso real a personas o empresas.
+
+[Historial de sesiones](../../images/cloud-aws/monitoring/historial-sesiones.png) · [Consulta de logs](../../images/cloud-aws/monitoring/consulta-logs-autenticacion.png) · [Índice cloud](../case1.md).

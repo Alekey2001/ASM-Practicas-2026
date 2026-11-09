@@ -1,0 +1,19 @@
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa*
+id_ed25519*
+__pycache__/
+*.py[cod]
+.venv/
+.revision-temp/
+~$*
+*.tmp
+*.log
+
+# Archivos internos de revision de Codex
+/docs/revision/
