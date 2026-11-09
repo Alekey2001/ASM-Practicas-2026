@@ -237,7 +237,7 @@ De esta forma, únicamente la dirección administrativa autorizada podrá inicia
 
 ## 13. Estado de remediación
 
-**Estado: PENDIENTE DE CIERRE/VALIDACIÓN**
+**Estado: PENDIENTE DE VALIDACIÓN**
 
 El hallazgo fue identificado y la medida de remediación quedó definida.
 
@@ -263,7 +263,7 @@ Para cerrar completamente el caso se debe:
 | Fuerza bruta               | No                                    |
 | Persistencia               | No                                    |
 | Fail2Ban                   | Activo, sin bloqueo durante la prueba |
-| Remediación                | Restricción de Security Group         |
+| Remediación propuesta      | Restricción de Security Group         |
 | Estado                     | Pendiente de validación               |
 
 ---
@@ -277,3 +277,19 @@ El principal riesgo identificado fue la exposición innecesaria del puerto SSH a
 La recomendación principal es restringir el acceso TCP/22 a la dirección IP administrativa autorizada mediante una regla `/32`.
 
 El caso debe considerarse completamente cerrado únicamente después de aplicar y validar dicha restricción.
+
+## 16. Trazabilidad y resolución de la contradicción
+
+[Inicio](../README.md) · [Índice cloud](case1.md) · [Fe de erratas](../docs/revision/FE_DE_ERRATAS.md).
+
+| Etapa | Sustento local |
+|---|---|
+| Hallazgo | [Nmap SSH abierto](../images/cloud-aws/ssh/nmap-ssh-publico.png), [conectividad TCP](../images/cloud-aws/ssh/conectividad-tcp.png) y relato de la regla inicial |
+| Controles de autenticación | [sshd](../images/cloud-aws/ssh/configuracion-autenticacion.png) y [rechazo de usuario inexistente](../images/cloud-aws/ssh/intento-usuario-inexistente.png) |
+| Remediación propuesta | Restringir TCP/22 al origen administrativo /32, verificando también reglas IPv6 si existieran |
+| Acción reportada | El PDF AWS01 afirma que se aplicó la restricción; no aporta salida original fechada que la demuestre |
+| Validación posterior | No se encontró captura de la regla /32 y pruebas correlacionadas de éxito/fallo desde orígenes autorizado/no autorizado |
+
+El PDF y este caso tienen la misma fecha de incorporación al último commit que los modifica: 2026-10-20. El PDF no aporta metadatos de creación/modificación que establezcan una cronología de la prueba. Las marcas Git no son fechas de ejecución de comandos. La afirmación narrativa del PDF no basta para resolver la contradicción; el estado permanece **PENDIENTE DE VALIDACIÓN**.
+
+La autenticación rechazada no demuestra que el Security Group haya cerrado el puerto. Para cerrar el hallazgo se necesitan regla efectiva, identificador del recurso, fecha y pruebas correlacionadas desde ambos orígenes, sin divulgar IP administrativas en la versión pública. Las [capturas de logs](../images/cloud-aws/monitoring/logs-ssh-fail2ban.png) muestran Fail2Ban activo sin bloqueo durante la prueba.

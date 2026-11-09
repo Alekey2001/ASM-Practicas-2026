@@ -1,3 +1,6 @@
+-- Fixture exclusivamente sintético aiaco.local. Contraseñas débiles intencionales.
+-- Solo inicialización de un volumen vacío: DROP TABLE destruye una tabla existente.
+-- Copia histórica de emailscorp/mysql/init.sql; no es un script de remediación.
 CREATE DATABASE IF NOT EXISTS aiaco;
 
 USE aiaco;

@@ -308,3 +308,9 @@ HTTP 401
 confirmando que las solicitudes sin el mecanismo requerido eran rechazadas.
 
 Por lo tanto, el caso fue **remediado y validado correctamente**.
+
+## 19. Alcance de la evidencia conservada
+
+[Captura de validación HTTP 401](../images/cloud-aws/imdsv2/validacion-http401.png) · [Índice cloud](case1.md) · [Fe de erratas](../docs/revision/FE_DE_ERRATAS.md).
+
+La captura respalda el rechazo de la consulta sin token en el laboratorio. El cambio a Required y las consultas previas se describen en el caso y el informe; no se dispone de una comprobación actual de AWS ni de una nueva prueba con token realizada en esta revisión. Este cierre histórico es específico de IMDS y no cierra SSH. No tener un IAM Role no demuestra por sí solo cumplimiento global del principio de mínimo privilegio.

@@ -1,60 +1,25 @@
-# 🌐 [ASM-02] Mapeo de Superficie de Ataque Web
+# Mapeo de superficie web — REP-ASM-2026-S02
 
-**Proyecto:** AIACO Corp – Attack Surface Management (ASM)  
-**Fase:** Semana 2 - Reconocimiento y Mapeo Web  
-**Activo Auditado:** `https://aiaco.netlify.app` (*Infraestructura Simulada real*)
+[Inicio](../README.md) · [Informe histórico](REP-ASM-2026-S02_AIACO_ASM_Sprint.pdf) · [Fe de erratas](../docs/revision/FE_DE_ERRATAS.md).
 
-## 🎯 Objetivo
-Identificar todos los componentes públicos expuestos del sitio web de AIACO para mapear su superficie de ataque antes de iniciar cualquier evaluación de seguridad activa. El enfoque es estrictamente de reconocimiento (OSINT/Fingerprinting), enumerando puertos, servicios, tecnologías y directorios públicos sin realizar explotación.
+## Activo y alcance histórico
 
----
+El activo documentado es `https://aiaco.netlify.app`. No se sustituye por otro dominio ni se comprueba su estado actual. Los informes lo describen como un activo real; las capturas corresponden a actividades históricas de reconocimiento. Nmap y Gobuster generan tráfico y son técnicas activas; no deben describirse como reconocimiento exclusivamente pasivo ni como autorización para repetirlas.
 
-## 📊 Resumen 
-El activo web auditado presenta una **superficie de ataque reducida y bien controlada**. Se encuentra alojado en una infraestructura serverless (Netlify), exponiendo únicamente los servicios HTTP/HTTPS esperados. No se detectaron fugas de información, archivos de configuración sensibles ni directorios administrativos expuestos. 
+## Evidencia disponible
 
-**Nivel de Exposición Inicial:** Riesgo Bajo.
+| Técnica | Resultado observado o reportado | Evidencia y límites |
+|---|---|---|
+| Fingerprinting | Netlify, Tailwind CSS, Google Font API | [Wappalyzer](../images/web/fingerprinting/wappalyzer-tecnologias.png); identificación de herramientas, no garantía de arquitectura interna |
+| Puertos y servicios | 53/TCP, 80/TCP y 443/TCP abiertos en la respuesta observada | [Nmap](../images/web/nmap/puertos-servicios.png); la IP puede corresponder a infraestructura compartida, no atribuir DNS a la aplicación sin evidencia |
+| Métodos y cabeceras | GET, HEAD, POST, OPTIONS; HSTS presente | [NSE](../images/web/nmap/metodos-cabeceras.png); que un método no se anuncie no demuestra su bloqueo efectivo |
+| Cabeceras ausentes | CSP, X-Frame-Options y X-Content-Type-Options, entre otras señaladas | [Resumen](../images/web/headers/evaluacion-cabeceras.png) y [detalle](../images/web/headers/cabeceras-detalle.png); no hay validación posterior |
+| Enumeración de rutas | Respuestas 200 y 403 | [Gobuster](../images/web/gobuster/enumeracion-resultados.png); 403 por sí solo no prueba que exista la ruta ni que su control de acceso sea correcto |
 
----
+La documentación histórica indica respuestas 200 para `/index.html` y `/servicio`, y 403 para rutas como `/company`, `/community` y `/comments`. No se reportaron fugas en el alcance explorado; no equivale a demostrar cero fugas en todo el sistema ni ausencia de archivos sensibles fuera de ese alcance.
 
-## 🔍 Fases del Escaneo y Hallazgos
+## Conclusión y acciones pendientes
 
-### 1. Fingerprinting y Tecnologías
-Se realizó un análisis pasivo del stack tecnológico utilizando **Wappalyzer** para identificar las herramientas subyacentes.
+El informe asignó riesgo bajo al mapeo. Esa calificación no certifica el estado actual ni la seguridad global del proveedor o de la aplicación. Se propone revisar CSP, protección frente a framing y MIME sniffing, probar compatibilidad y documentar las respuestas posteriores. No se declara implementado ese hardening.
 
-*   **Hosting / Infraestructura:** Netlify
-*   **Frontend Framework:** Tailwind CSS
-*   **Tipografía / Assets:** Google Font API
-*   *Nota:* No se detectaron lenguajes de backend tradicionales (PHP, ASP.NET) ni CMS (WordPress), lo cual es consistente con una Single Page Application (SPA) o un sitio estático.
-
-### 2. Análisis de Puertos y Servicios (Nmap)
-Se ejecutó un escaneo de puertos y detección de versiones para mapear los servicios expuestos.
-
-| Puerto | Protocolo | Estado | Servicio | Notas |
-| :--- | :--- | :--- | :--- | :--- |
-| **53** | TCP | Abierto | DNS | Resolución de nombres. |
-| **80** | TCP | Abierto | HTTP | Redirección estándar. |
-| **443** | TCP | Abierto | HTTPS | Tráfico seguro. Servidor: Netlify. |
-
-*Servicios como SSH (22), FTP (21), RDP (3389) o MySQL (3306) se encuentran correctamente filtrados o cerrados.*
-
-### 3. Auditoría de Cabeceras HTTP
-Se auditaron las cabeceras de respuesta del servidor utilizando Nmap (scripts NSE) y `SecurityHeaders.com`.
-
-*   **Métodos Permitidos:** `GET, HEAD, POST, OPTIONS` (Buena práctica: `PUT` y `DELETE` deshabilitados).
-*   **Cabeceras de Seguridad Presentes:** `Strict-Transport-Security` (HSTS habilitado, forzando HTTPS).
-*   **Cabeceras Ausentes (Oportunidad de Mejora):** 
-    *   `Content-Security-Policy` (CSP)
-    *   `X-Frame-Options`
-    *   `X-Content-Type-Options`
-
-### 4. Descubrimiento de Contenido (Fuzzing de Rutas)
-Se utilizó **Gobuster** con un diccionario estándar de Kali Linux (`common.txt`) para identificar rutas ocultas.
-
-*   **Rutas Accesibles (HTTP 200):** `/index.html`, `/servicio`.
-*   **Rutas Restringidas (HTTP 403):** `/company`, `/community`, `/comments`. (El servidor responde a la ruta, pero deniega el acceso).
-*   **Fugas (Inexistentes):** No se detectaron archivos sensibles (`.env`, `.git`, `backup.zip`, `config.php`).
-
----
-
-## 🛡️ Conclusión y Recomendaciones (Blue Team)
-La infraestructura principal de la aplicación web está correctamente asegurada por el proveedor de hosting. La principal recomendación técnica es **reforzar las cabeceras de seguridad HTTP** (Hardening) implementando CSP y protecciones contra Clickjacking (X-Frame-Options) para incrementar la protección del lado del cliente (navegador).
+[Comandos históricos y sus límites](../scripts/README_scripts.md) · [Herramientas](../tools/README_instalacion.md).
