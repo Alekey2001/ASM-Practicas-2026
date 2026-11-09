@@ -1,12 +1,22 @@
-# Office lock files and local/editor artefacts
-~$*
+.env
+.env.*
+!.env.example
 *.tmp
 *.temp
 *.swp
-.revision-temp/
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa*
+id_ed25519*
 __pycache__/
 *.py[cod]
+.venv/
+.revision-temp/
+~$*
+*.tmp
+*.log
 
-# Private review material: never publish these paths
+# Material interno de revisión: no publicar
 /docs/revision/
-

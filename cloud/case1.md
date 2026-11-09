@@ -1,10 +1,23 @@
 # ☁️ AIACO AWS DevSecOps & Cloud Security Lab
 
+[Inicio](../README.md) · [Informe histórico AWS01](REP-ASM-2026-AWS01_DevSecOps_AWS_Security_Lab.pdf) · [Fe de erratas](../docs/public/FE_DE_ERRATAS.md).
+
+## Estado sustentado por la revisión local
+
+| Caso | Estado y evidencia |
+|---|---|
+| [SSH](readmecase2-ssh.md) | **PENDIENTE DE VALIDACIÓN**. El PDF reporta cierre, pero no hay evidencia fechada de /32 y pruebas desde ambos orígenes que resuelva la contradicción. |
+| [IMDSv2](readmecase3-IMDsv2.md) | Cambio a Required reportado; [captura HTTP 401](../images/cloud-aws/imdsv2/validacion-http401.png) demuestra rechazo de esa consulta sin token en el laboratorio. No es una comprobación actual de AWS. |
+| [Actividad administrativa](readmecase1-false/positive.md) | Clasificada como falso positivo por el caso histórico; no implica un incidente de producción. |
+
+Las secciones siguientes conservan el inventario y el plan de la **fase inicial histórica**. Referencias a `Optional`, instancia detenida o tareas futuras describen esa fase, no el estado final ni actual de los recursos. AWS es infraestructura real utilizada como laboratorio, no un simulador sin recursos cloud. No se ejecutó ningún comando AWS durante esta revisión.
+
+
 Laboratorio práctico de infraestructura, administración, DevSecOps y seguridad en Amazon Web Services (AWS).
 
 El objetivo del proyecto es construir una infraestructura cloud controlada que posteriormente permita realizar prácticas de **Red Team, Blue Team, hardening, monitoreo, detección y respuesta a incidentes**.
 
-> **Entorno educativo y autorizado.**  
+> **Entorno educativo y autorizado.**
 > Todas las pruebas de seguridad documentadas en este repositorio se realizan exclusivamente sobre infraestructura propia y autorizada.
 ---
 ## 1. Arquitectura del laboratorio
@@ -52,7 +65,7 @@ Arquitectura general:
 
 ---
 
-# 2. Amazon EC2
+## 2. Amazon EC2
 
 ## Instancia principal
 
@@ -67,7 +80,7 @@ Arquitectura general:
 | Arquitectura AMI | AMD64 |
 | Virtualización | HVM |
 | vCPU | 2 |
-| Estado actual | Detenida |
+| Estado inicial documentado | Detenida |
 | IPv4 privada | `172.31.34.81` |
 | IPv4 pública actual | No asignada |
 | IPv6 | No asignada |
@@ -91,7 +104,7 @@ ip-172-31-34-81.ec2.internal
 
 ---
 
-# 3. Red AWS
+## 3. Red AWS
 
 La instancia EC2 está desplegada dentro de una VPC y una subred de AWS.
 
@@ -107,7 +120,7 @@ EC2
  └── Security Group
 ```
 
-La instancia actualmente no dispone de:
+La instancia en el inventario inicial no dispone de:
 
 - Elastic IP
 - IPv6
@@ -118,7 +131,7 @@ Esto se debe considerar al realizar las futuras pruebas de conectividad y exposi
 
 ---
 
-# 4. Security Group
+## 4. Security Group
 
 Security Group asociado:
 
@@ -139,15 +152,15 @@ El objetivo será determinar:
 
 ---
 
-# 5. Instance Metadata Service — IMDS
+## 5. Instance Metadata Service — IMDS
 
-Estado actual:
+Estado inicial documentado:
 
 ```text
 IMDSv2: Optional
 ```
 
-Esto significa que la instancia permite IMDSv2 pero actualmente no está configurada para exigirlo obligatoriamente.
+Esto significa que la instancia permite IMDSv2 pero en el inventario inicial no está configurada para exigirlo obligatoriamente.
 
 Durante la fase Blue Team se evaluará cambiar la configuración a:
 
@@ -159,7 +172,7 @@ para exigir IMDSv2.
 
 ---
 
-# 6. IAM
+## 6. IAM
 
 Actualmente la instancia EC2 no tiene un IAM Role asociado.
 
@@ -191,7 +204,7 @@ Durante la fase Blue Team se trabajará en:
 
 ---
 
-# 7. AWS Lambda
+## 7. AWS Lambda
 
 Se creó una función AWS Lambda para estudiar arquitectura Serverless.
 
@@ -230,7 +243,7 @@ En un entorno productivo se deberán evaluar mecanismos adicionales de autentica
 
 ---
 
-# 8. Amazon Aurora PostgreSQL Serverless
+## 8. Amazon Aurora PostgreSQL Serverless
 
 Se desplegó un clúster Aurora PostgreSQL mediante AWS CloudShell y AWS CLI.
 
@@ -279,7 +292,7 @@ aurora-postgresql
 
 ---
 
-# 9. AWS CloudShell y AWS CLI
+## 9. AWS CloudShell y AWS CLI
 
 AWS CloudShell fue utilizado para administrar y verificar recursos directamente mediante CLI.
 
@@ -300,7 +313,7 @@ Esto permitió continuar trabajando incluso cuando una operación de la interfaz
 
 ---
 
-# 10. Amazon Bedrock
+## 10. Amazon Bedrock
 
 Se realizó una prueba básica con Amazon Bedrock utilizando:
 
@@ -314,7 +327,7 @@ Se realizó una invocación controlada desde el Playground para comprender el fu
 
 ---
 
-# 11. AWS Budgets
+## 11. AWS Budgets
 
 Se configuró AWS Budgets como mecanismo de control financiero del laboratorio.
 
@@ -329,7 +342,7 @@ El laboratorio prioriza recursos compatibles con el AWS Free Plan y los crédito
 
 ---
 
-# 12. Explore AWS
+## 12. Explore AWS
 
 Se realizaron las actividades prácticas disponibles en Explore AWS.
 
@@ -373,14 +386,14 @@ Por este motivo, la recompensa correspondiente a esta actividad no se considera 
 
 ---
 
-# 13. Estado actual de seguridad
+## 13. Estado inicial documentado de seguridad
 
 Antes de comenzar las pruebas ofensivas se identificaron los siguientes puntos para revisión:
 
-| Área | Estado actual | Próxima revisión |
+| Área | Estado inicial documentado | Próxima revisión |
 |---|---|---|
 | EC2 | Detenida | Preparar para laboratorio |
-| IPv4 pública | No asignada actualmente | Revisar al iniciar EC2 |
+| IPv4 pública | No asignada en el inventario inicial | Revisar al iniciar EC2 |
 | IAM Role EC2 | No asignado | Least Privilege |
 | IMDSv2 | Optional | Evaluar `required` |
 | Root account | Utilizada administrativamente | Hardening IAM |
@@ -393,7 +406,7 @@ Estos elementos todavía no representan automáticamente vulnerabilidades confir
 
 ---
 
-# 14. Metodología del laboratorio
+## 14. Metodología del laboratorio
 
 El proyecto seguirá cuatro fases.
 
@@ -477,7 +490,7 @@ Para cada vulnerabilidad o misconfiguration se documentará:
 6. Validación posterior.
 
 ---
-# 15. Próximo paso
+## 15. Próximo paso
 
 El siguiente objetivo del laboratorio es completar el inventario de seguridad de:
 

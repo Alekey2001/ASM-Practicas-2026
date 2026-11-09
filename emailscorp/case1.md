@@ -1,120 +1,49 @@
-# AIACO Corp
-## Laboratorio de Gestión de Superficie de Ataque (ASM)
+# Identidades y bases de datos — laboratorio sintético
 
-# Caso de Estudio
+**Documento relacionado:** [REP-ASM-2026-EML01](REP-ASM-2026-EML01_AIACO_Email_Security.pdf). [Inicio](../README.md) · [Fe de erratas](../docs/public/FE_DE_ERRATAS.md).
 
-## Incidente AIACO-2026-001
+## Escenario y alcance
 
-### Descripción
+`AIACO-2026-001` es el identificador de un **incidente ficticio**: el enunciado simula que un tercero obtuvo una copia de una tabla de desarrollo. No demuestra una intrusión, exfiltración ni compromiso real. Las identidades, correos y contraseñas vulnerables de `aiaco.local` son datos sintéticos necesarios para reproducir el ejercicio.
 
-Durante una revisión rutinaria de los activos digitales de AIACO Corp se detectó la posible exposición de información sensible relacionada con usuarios corporativos.
+Se analiza MySQL 8.0 en Docker local. No se evaluaron correo real, SPF, DKIM, DMARC, MX, servicios OSINT externos ni autenticación de una aplicación productiva.
 
-La investigación preliminar identificó una base de datos de desarrollo que contenía información de autenticación utilizada para pruebas internas. Dicha base de datos permanecía accesible desde un entorno que no contaba con los controles de seguridad esperados para un ambiente de desarrollo.
+## Fuentes y hallazgos
 
-Como resultado de esta exposición, un tercero no autorizado logró obtener una copia de una tabla denominada **leaked_credentials**, la cual contenía direcciones de correo electrónico corporativas junto con información relacionada con sus credenciales.
+El [fixture de inicialización](mysql/init.sql), su [copia histórica](../scripts/database.sql) y el [JSON sintético](../scripts/fault.json) describen los mismos cinco registros. El [CSV de identidades](aiaco_corporate_emails.csv) es otro conjunto de datos sintéticos; no contiene las contraseñas y no se importa automáticamente a MySQL.
 
-Hasta este momento se desconoce si la información fue utilizada para acceder a otros sistemas de la organización; sin embargo, la existencia de contraseñas débiles y mecanismos de almacenamiento inseguros representa un riesgo importante para la infraestructura tecnológica de AIACO Corp.
+| Observación del fixture | Alcance |
+|---|---|
+| Cinco registros | Muestra educativa; no representa plantilla real |
+| Tres contraseñas en texto plano | Exposición intencional en la tabla original |
+| Cinco valores MD5, dos registros sin texto plano | MD5 persiste también en la copia saneada; no son únicamente dos hashes |
+| Dos contraseñas triviales en el ejercicio | Los valores débiles son deliberados; no deben reutilizarse como credenciales operativas |
+| Un par texto plano / MD5 no coincide | Inconsistencia del fixture conservada como evidencia; no debe usarse para probar un sistema de login |
 
----
+La calificación crítica del almacenamiento de texto plano y la clasificación de MD5 proceden del informe educativo. Un formato de correo predecible o compartir dominio no prueba por sí solo una vulnerabilidad de autenticación. Se corrigió la atribución histórica de una contraseña trivial al usuario equivocado: las consultas del fixture son la fuente de verdad.
 
-# Objetivo del laboratorio
+## Acción histórica y validación
 
-Como integrante del equipo de Ciberseguridad de AIACO Corp, deberás realizar el análisis técnico del incidente para determinar:
+Se duplicó la tabla en `leaked_credentials_backup` y se estableció `password_plain = NULL` **en esa copia**. La [captura del UPDATE](../images/identity-database/remediation/saneamiento-copia.png) muestra la operación; la [validación de integridad](../images/identity-database/remediation/validacion-integridad-copia.png) compara ambas tablas.
 
-- Qué información fue comprometida.
-- Qué debilidades permitieron la exposición de la base de datos.
-- Qué riesgos representan las credenciales filtradas.
-- Qué impacto tendría el incidente para la organización.
-- Qué controles de seguridad deberán implementarse posteriormente.
+| Objeto | Antes | Después observado | Estado |
+|---|---|---|---|
+| `leaked_credentials` | Cinco registros; tres textos planos | Tres textos planos permanecen | Vulnerable por diseño del laboratorio |
+| `leaked_credentials_backup` | Copia de cinco registros | Cinco registros; cero textos planos; MD5 conservado | Saneamiento de copia documentado |
+| Autenticación de aplicación | No aportada | No hay migración ni pruebas de login | Pendiente |
 
-En esta primera fase únicamente se realizará el reconocimiento del incidente y el análisis de la evidencia disponible.
+**Esto no es remediación integral del sistema.** Conservar filas no demuestra continuidad de autenticación, restauración segura, eliminación de otras copias ni integridad de un sistema productivo.
 
-No se implementarán acciones correctivas hasta finalizar el proceso de investigación.
+## Reproducción sin alterar el original
 
----
+El nuevo [sanitize_copy.sql](mysql/sanitize_copy.sql) crea `leaked_credentials_sanitized`, una copia diferente de la evidencia histórica. Copia los identificadores, correos y hashes; nunca inserta texto plano. Su clave primaria permite repetir la operación sin duplicar registros. No borra filas adicionales que ya existieran en el destino: las señala con una consulta de validación. Requiere esquema compatible y ejecución exclusiva de laboratorio.
 
-# Evidencia disponible
+Las consultas antes/después informan conteos y diferencias, sin imprimir contraseñas. Para el fixture se esperan cinco filas, tres textos planos en el original y cero en la copia. Son **expectativas**, no resultados de una ejecución de MySQL realizada durante esta revisión. La sintaxis específica y la repetición sobre MySQL real quedan pendientes si no se dispone de servidor local.
 
-Base de datos:
+El uso de `VALUES()` en el upsert es compatible con MySQL 8.0, aunque está deprecado en versiones de esa serie; no se afirma compatibilidad con versiones futuras. Los scripts de inicialización contienen `DROP TABLE`: solo deben usarse al inicializar un volumen vacío, nunca como remediación de una base con información que se deba conservar.
 
-```
-aiaco
-```
+## Remediación del sistema pendiente
 
-Tabla comprometida:
+MD5 no es adecuado para almacenar contraseñas: es demasiado rápido para resistir ataques de adivinación. Se recomienda diseñar una migración de autenticación a **Argon2id** o, cuando corresponda, **bcrypt**, con salt individual y parámetros revisados. Los hashes no se convierten por simple sustitución SQL; hacen falta flujos de restablecimiento o actualización tras verificar la contraseña. Eliminar texto plano de una copia no implementa esa migración.
 
-```
-leaked_credentials
-```
-
-Número de registros afectados:
-
-```
-5
-```
-
-Información almacenada:
-
-- Correo corporativo
-- Hash MD5 de contraseña
-- Contraseña en texto plano (en algunos registros)
-
----
-
-# Información disponible para el análisis
-
-El equipo de respuesta a incidentes cuenta únicamente con una copia de la base de datos obtenida del servidor afectado.
-
-No existe información adicional sobre el atacante ni sobre el vector de acceso utilizado.
-
-Será responsabilidad del analista determinar el nivel de exposición y documentar los hallazgos durante el desarrollo del laboratorio.
-
-# 🛡️ [ASM-03] Solución, Remediación y Análisis del Vector de Credenciales Corporativas
-
-**Proyecto:** AIACO Corp – Attack Surface Management (ASM)  
-**Vector:** Correos Corporativos y Gestión de Credenciales Exposibles (`emailscorp`)  
-**Dominio Analizado:** `aiaco.local`
-
----
-
-## 🔍 1. Diagnóstico de la Situación Inicial
-
-Durante la auditoría del repositorio de credenciales simulado (`leaked_credentials`), se identificó una grave deficiencia en el almacenamiento y gestión de la identidad digital del personal de **AIACO Corp**.
-
-### Hallazgos Principales:
-1. **Almacenamiento de Contraseñas en Texto Plano (Severidad: CRÍTICA):**  
-   3 de los 5 usuarios (60% de la muestra) mantenían sus contraseñas expuestas directamente sin ningún tipo de hashing (`laura.garcia`, `miguel.lopez`, `juan.torres`).
-2. **Uso de Contraseñas Débiles/Triviales (Severidad: CRÍTICA):**  
-   Se detectaron credenciales de alto riesgo como `password` y `123456`, vulnerables a ataques automatizados de fuerza bruta y *Credential Stuffing*.
-3. **Uso de Criptografía Obsoleta (Severidad: MEDIA):**  
-   2 usuarios (`alejandro.rodriguez`, `fernanda.silva`) almacenaban sus claves mediante **MD5**, un algoritmo criptográficamente roto y vulnerable a ataques de tablas arcoíris (*Rainbow Tables*).
-4. **Patrón de Nombres de Usuario Predictible (Severidad: BAJA):**  
-   Estructura estandarizada `nombre.apellido@aiaco.local`, lo que facilita la enumeración de usuarios por parte de un atacante.
-
----
-
-## 📊 2. Matriz de Evaluación de Riesgo (Pre-Remediación)
-
-| Usuario | Formato Credencial | Calificación de Riesgo | Impacto Potencial |
-| :--- | :--- | :--- | :--- |
-| `laura.garcia@aiaco.local` | Texto Plano (`password`) | **CRÍTICO** | Compromiso inmediato de cuenta / Acceso inicial. |
-| `miguel.lopez@aiaco.local` | Texto Plano | **CRÍTICO** | Escalación lateral dentro del dominio. |
-| `juan.torres@aiaco.local` | Texto Plano (`123456`) | **CRÍTICO** | Compromiso de credenciales por diccionario. |
-| `alejandro.rodriguez@aiaco.local`| Hash MD5 | **MEDIO** | Reversión por fuerza bruta u offline cracking. |
-| `fernanda.silva@aiaco.local` | Hash MD5 | **MEDIO** | Reversión por fuerza bruta u offline cracking. |
-
----
-
-## 🛠️ 3. Estrategia de Remediación Aplicada
-
-Para solucionar la vulnerabilidad sin destruir la evidencia forense ni afectar la continuidad operativa de los usuarios, se ejecutó una **remediación simulada por medio de duplicado y saneamiento de tabla**:
-
-1. **Aislamiento de Evidencias:**  
-   Se creó una réplica de la tabla denominada `leaked_credentials_backup`.
-2. **Saneamiento de Datos Sensibles (Data Sanitization):**  
-   Se ejecutó un borrado lógico de las contraseñas en texto plano, estableciendo su valor en `NULL`.
-
-```sql
-UPDATE leaked_credentials_backup
-SET password_plain = NULL
-WHERE password_plain IS NOT NULL;
+Quedan pendientes política de contraseñas, MFA según contexto, gestión de credenciales operativas y pruebas de autenticación. [Preparación e instrucciones locales](../tools/README_instalacion.md) · [Consultas y ejecución](../scripts/README_scripts.md).
