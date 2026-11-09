@@ -1,0 +1,6 @@
+# This only affects archive exports; it does not restrict visibility or
+# downloads in GitHub's repository interface.
+Presentación.pptx export-ignore
+~$* export-ignore
+docs/revision/** export-ignore
+

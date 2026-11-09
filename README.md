@@ -1,5 +1,9 @@
 ﻿# 🛡️ AICO — Programa de Attack Surface Management (ASM)
 
+> **Estado de publicación:** material histórico y educativo. Consulta la [fe de erratas pública](docs/public/FE_DE_ERRATAS.md) antes de reutilizar cualquier resultado.
+>
+> La presentación y los informes no deben tratarse como una certificación de cierre. `Presentación.pptx` requiere una versión pública anonimizada: puede contener información personal, identificadores técnicos y afirmaciones no verificadas por artefactos públicos. Cualquier clave que haya aparecido en una captura requiere revocación y revisión del historial Git.
+
 ### De la superficie de ataque al parche validado: **5 vectores auditados, vulnerabilidades remediadas y evidencia documentada.**
 
 > **Red Team → Evidencia → Blue Team → Remediación → Validación.**

@@ -1,0 +1,12 @@
+# Office lock files and local/editor artefacts
+~$*
+*.tmp
+*.temp
+*.swp
+.revision-temp/
+__pycache__/
+*.py[cod]
+
+# Private review material: never publish these paths
+/docs/revision/
+
