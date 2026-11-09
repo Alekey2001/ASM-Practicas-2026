@@ -1,6 +1,6 @@
 # OSINT — indexación, robots.txt y Google Dorking
 
-**Código:** REP-ASM-2026-OSINT01. [Inicio](../README.md) · [Informe histórico](REP-ASM-2026-OSINT01_Fundamentos_OSINT_Web.pdf) · [Fe de erratas](../docs/revision/FE_DE_ERRATAS.md).
+**Código:** REP-ASM-2026-OSINT01. [Inicio](../README.md) · [Informe histórico](REP-ASM-2026-OSINT01_Fundamentos_OSINT_Web.pdf) · [Fe de erratas](../docs/public/FE_DE_ERRATAS.md).
 
 Este módulo es un estudio teórico-práctico basado en TryHackMe y ejercicios de búsqueda. La [captura de finalización](../images/osint/tryhackme-dorking.png) acredita una actividad educativa; no es certificación profesional, auditoría formal ni evidencia de exposición de una empresa.
 

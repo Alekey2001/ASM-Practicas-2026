@@ -1,6 +1,6 @@
 # Índice de imágenes y trazabilidad
 
-[Inicio](../README.md) · [Resultados](../docs/revision/RESULTADOS.md) · [Tabla CSV con SHA-256](../docs/revision/clasificacion-imagenes.csv).
+[Inicio](../README.md) · [Fe de erratas pública](../docs/public/FE_DE_ERRATAS.md).
 
 Las 57 imágenes se clasificaron por inspección visual. Se conservaron 56 sin cambiar un byte. La captura de arranque MobSF es una copia anonimizada autorizada, con respaldo cifrado del original fuera del repositorio. Los nombres históricos se conservan en la tabla para trazabilidad, no como rutas vigentes.
 
@@ -8,7 +8,7 @@ La carpeta adicional `cloud-aws/services/` agrupa Bedrock, Lambda, Aurora y acti
 
 Casos: [Web](../sitiosweb/README_mapeo_web.md), [Identidades/DB](../emailscorp/case1.md), [AWS](../cloud/case1.md), [OSINT](../redes/README_osint.md), [Mobile](../apps/case1.md).
 
-Antes de publicar deben revisarse datos de cuenta, IP, nombres, rutas y material de terceros en las capturas. Las contraseñas de las capturas SQL pertenecen al fixture sintético. La ilustración conceptual generada no es evidencia de una prueba. Véase [privacidad y publicación](../docs/revision/PRIVACIDAD.md).
+Antes de publicar deben revisarse datos de cuenta, IP, nombres, rutas y material de terceros en las capturas. Las contraseñas de las capturas SQL pertenecen al fixture sintético. La ilustración conceptual generada no es evidencia de una prueba. Véase la [fe de erratas pública](../docs/public/FE_DE_ERRATAS.md).
 
 | Origen histórico | Destino | Categoría | Justificación |
 |---|---|---|---|

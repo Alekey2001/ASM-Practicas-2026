@@ -96,4 +96,4 @@ git diff --check
 git diff --cached --check
 ```
 
-El validador comprueba archivos locales y no contacta URLs externas. Los resultados reales y los límites de SQL/Compose se registran en [RESULTADOS.md](../docs/revision/RESULTADOS.md).
+El validador comprueba archivos locales y no contacta URLs externas. Los límites de SQL/Compose y de la evidencia pública se registran en la [fe de erratas pública](../docs/public/FE_DE_ERRATAS.md).

@@ -1,6 +1,6 @@
 # Identidades y bases de datos — laboratorio sintético
 
-**Documento relacionado:** [REP-ASM-2026-EML01](REP-ASM-2026-EML01_AIACO_Email_Security.pdf). [Inicio](../README.md) · [Fe de erratas](../docs/revision/FE_DE_ERRATAS.md).
+**Documento relacionado:** [REP-ASM-2026-EML01](REP-ASM-2026-EML01_AIACO_Email_Security.pdf). [Inicio](../README.md) · [Fe de erratas](../docs/public/FE_DE_ERRATAS.md).
 
 ## Escenario y alcance
 

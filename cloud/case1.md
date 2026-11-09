@@ -1,6 +1,6 @@
 # ☁️ AIACO AWS DevSecOps & Cloud Security Lab
 
-[Inicio](../README.md) · [Informe histórico AWS01](REP-ASM-2026-AWS01_DevSecOps_AWS_Security_Lab.pdf) · [Fe de erratas](../docs/revision/FE_DE_ERRATAS.md).
+[Inicio](../README.md) · [Informe histórico AWS01](REP-ASM-2026-AWS01_DevSecOps_AWS_Security_Lab.pdf) · [Fe de erratas](../docs/public/FE_DE_ERRATAS.md).
 
 ## Estado sustentado por la revisión local
 

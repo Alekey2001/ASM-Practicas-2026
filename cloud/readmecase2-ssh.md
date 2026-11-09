@@ -280,7 +280,7 @@ El caso debe considerarse completamente cerrado únicamente después de aplicar 
 
 ## 16. Trazabilidad y resolución de la contradicción
 
-[Inicio](../README.md) · [Índice cloud](case1.md) · [Fe de erratas](../docs/revision/FE_DE_ERRATAS.md).
+[Inicio](../README.md) · [Índice cloud](case1.md) · [Fe de erratas](../docs/public/FE_DE_ERRATAS.md).
 
 | Etapa | Sustento local |
 |---|---|

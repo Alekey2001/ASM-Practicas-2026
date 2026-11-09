@@ -1,4 +1,8 @@
-# AIACO — Prácticas de Attack Surface Management
+﻿# AIACO — Prácticas de Attack Surface Management
+
+> **Estado de publicación:** material histórico y educativo. Consulta la
+> [fe de erratas pública](docs/public/FE_DE_ERRATAS.md) antes de reutilizar
+> cualquier resultado.
 
 Portafolio de prácticas de ciberseguridad en cinco áreas: Web, Identidades y bases de datos, Cloud AWS, OSINT y Mobile AppSec. La documentación distingue resultados observados, acciones reportadas y validaciones pendientes.
 
@@ -16,7 +20,7 @@ Web y aplicación móvil se describen en los informes como activos reales de AIA
 
 Se adopta **AIACO** por el nombre visible del sitio, los casos y los informes técnicos. La variante **AICO** aparece en el informe final histórico; no hay evidencia suficiente para afirmar que sea otra entidad o un cambio oficial de marca. Se conservan nombres y códigos de los documentos originales.
 
-**Los PDF y la presentación son documentos históricos, no una certificación de cierre.** Consultar la [fe de erratas y matriz de evidencia](docs/revision/FE_DE_ERRATAS.md) junto con ellos. La presentación contiene información personal y afirmaciones pendientes de corrección; no está lista para publicación. La captura pública de arranque MobSF fue anonimizada, pero la clave permanece en el historial Git y su rotación está pendiente.
+**Los PDF y la presentación son documentos históricos, no una certificación de cierre.** Consultar la [fe de erratas pública](docs/public/FE_DE_ERRATAS.md) junto con ellos. La presentación contiene información personal y afirmaciones pendientes de corrección; no está lista para publicación. La captura pública de arranque MobSF fue anonimizada, pero la clave permanece en el historial Git y su rotación está pendiente.
 
 ## Estado de los cinco casos
 
@@ -43,7 +47,6 @@ ISO/IEC 27001, NIST SP 800-115, CIS y OWASP WSTG/MASVS/ASVS se usan como referen
 - [Índice y clasificación completa de imágenes](images/README.md).
 - [Preparación del laboratorio](tools/README_instalacion.md).
 - [Scripts, generación sintética, SQL y comandos históricos](scripts/README_scripts.md).
-- [Informe final histórico REP-ASM-2026-FIN01](REP-ASM-2026-FIN01_Informe_Final_ASM_AIACO.pdf), sujeto a la [fe de erratas](docs/revision/FE_DE_ERRATAS.md).
-- [Resultados de la revisión local y asuntos pendientes](docs/revision/RESULTADOS.md).
+- [Informe final histórico REP-ASM-2026-FIN01](REP-ASM-2026-FIN01_Informe_Final_ASM_AIACO.pdf), sujeto a la [fe de erratas pública](docs/public/FE_DE_ERRATAS.md).
 
 Los comandos históricos de reconocimiento no son autorización para repetir pruebas contra recursos públicos. Las validaciones de esta revisión no iniciaron infraestructura ni contactaron los activos evaluados.

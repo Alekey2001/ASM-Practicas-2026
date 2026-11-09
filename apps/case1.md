@@ -1,6 +1,6 @@
 # Mobile AppSec — análisis estático y límites de evidencia
 
-**Código:** REP-ASM-2026-MOB01. [Informe histórico](REP-ASM-2026-MOB01_AppSec_SAST_Movil.pdf) · [Inicio](../README.md) · [Fe de erratas](../docs/revision/FE_DE_ERRATAS.md).
+**Código:** REP-ASM-2026-MOB01. [Informe histórico](REP-ASM-2026-MOB01_AppSec_SAST_Movil.pdf) · [Inicio](../README.md) · [Fe de erratas](../docs/public/FE_DE_ERRATAS.md).
 
 **Estado: análisis inicial documentado; remediación y validación posterior NO VERIFICADAS.**
 

@@ -1,3 +1,5 @@
-# Solo exportaciones mediante git archive; no elimina archivos de Git ni su historial.
+# Solo afecta exportaciones como git archive; no elimina archivos de Git ni su historial.
+# Tampoco restringe la visibilidad o descarga desde la interfaz de GitHub.
 ~$* export-ignore
 Presentación.pptx export-ignore
+docs/revision/** export-ignore

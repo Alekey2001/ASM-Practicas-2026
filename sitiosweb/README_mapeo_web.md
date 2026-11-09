@@ -1,6 +1,6 @@
 # Mapeo de superficie web — REP-ASM-2026-S02
 
-[Inicio](../README.md) · [Informe histórico](REP-ASM-2026-S02_AIACO_ASM_Sprint.pdf) · [Fe de erratas](../docs/revision/FE_DE_ERRATAS.md).
+[Inicio](../README.md) · [Informe histórico](REP-ASM-2026-S02_AIACO_ASM_Sprint.pdf) · [Fe de erratas](../docs/public/FE_DE_ERRATAS.md).
 
 ## Activo y alcance histórico
 

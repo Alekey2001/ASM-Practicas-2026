@@ -5,6 +5,7 @@ import hashlib
 import json
 import re
 import struct
+import subprocess
 from pathlib import Path
 from urllib.parse import unquote, urlsplit
 
@@ -19,7 +20,9 @@ def validate():
     errors = []
     counts = {}
     files = [p for p in ROOT.rglob('*') if p.is_file() and not any(
-        part in {'.git', '.revision-temp', '__pycache__', '.venv'} for part in p.relative_to(ROOT).parts)]
+        part in {'.git', '.revision-temp', '__pycache__', '.venv'}
+        for part in p.relative_to(ROOT).parts
+    ) and p.relative_to(ROOT).parts[:2] != ('docs', 'revision') and not p.name.startswith('~$')]
     markdown = [p for p in files if p.suffix == '.md']
     link_count = 0
     for path in markdown:
@@ -54,6 +57,11 @@ def validate():
             elif parts.fragment:
                 # No se usan anchors locales actualmente; fallar explícitamente si aparecen.
                 errors.append(f'Anchor requiere validación: {path.relative_to(ROOT)} -> {target}')
+        if path.as_posix().endswith('docs/public/FE_DE_ERRATAS.md'):
+            continue
+        if any(marker in body for marker in ('docs/revision/', 'RESULTADOS.md', 'PRIVACIDAD.md',
+                                              'clasificacion-imagenes.csv', 'inventario-previo.csv')):
+            errors.append(f'Referencia pública a material privado: {path.relative_to(ROOT)}')
     counts['markdown'] = len(markdown)
     counts['enlaces_locales'] = link_count
 
@@ -65,41 +73,54 @@ def validate():
             errors.append(f'Sintaxis Python: {path.relative_to(ROOT)}')
     counts['python_sintaxis'] = len(python_files)
 
-    with (ROOT / 'docs/revision/clasificacion-imagenes.csv').open(encoding='utf-8', newline='') as handle:
-        mappings = list(csv.DictReader(handle))
-    image_paths = {p.relative_to(ROOT).as_posix() for p in files if p.suffix.lower() in {'.png', '.jpg', '.jpeg', '.jfif'}}
-    if image_paths != {row['destino'] for row in mappings} or len(mappings) != 57:
-        errors.append('La clasificación no cubre exactamente las 57 imágenes.')
-    for row in mappings:
-        target = ROOT / row['destino']
-        if not target.exists() or sha256(target) != row['sha256_publico']:
-            errors.append('Imagen ausente o modificada después del plan: ' + row['destino'])
-    counts['imagenes'] = len(mappings)
-    counts['imagenes_bytes_originales'] = sum(row['sha256_original'] == row['sha256_publico'] for row in mappings)
+    classification = ROOT / 'docs/revision/clasificacion-imagenes.csv'
+    if classification.exists():
+        with classification.open(encoding='utf-8', newline='') as handle:
+            mappings = list(csv.DictReader(handle))
+        image_paths = {p.relative_to(ROOT).as_posix() for p in files if p.suffix.lower() in {'.png', '.jpg', '.jpeg', '.jfif'}}
+        if image_paths != {row['destino'] for row in mappings} or len(mappings) != 57:
+            errors.append('La clasificación no cubre exactamente las 57 imágenes.')
+        for row in mappings:
+            target = ROOT / row['destino']
+            if not target.exists() or sha256(target) != row['sha256_publico']:
+                errors.append('Imagen ausente o modificada después del plan: ' + row['destino'])
+        counts['imagenes'] = len(mappings)
+        counts['imagenes_bytes_originales'] = sum(row['sha256_original'] == row['sha256_publico'] for row in mappings)
+    else:
+        counts['imagenes_clasificacion'] = 'omitida: CSV histórico privado no disponible'
 
-    png = (ROOT / 'images/mobile-appsec/mobsf/arranque-anonimizado.png').read_bytes()
-    offset, chunks = 8, []
-    while offset < len(png):
-        length = struct.unpack('>I', png[offset:offset + 4])[0]
-        chunks.append(png[offset + 4:offset + 8].decode('ascii'))
-        offset += length + 12
-    if any(c in chunks for c in ['tEXt', 'iTXt', 'zTXt', 'eXIf']):
-        errors.append('Metadatos adicionales en PNG anonimizado; revisar.')
-    counts['png_anonimizado_sin_texto_exif'] = not any(c in chunks for c in ['tEXt', 'iTXt', 'zTXt', 'eXIf'])
+    png_path = ROOT / 'images/mobile-appsec/mobsf/arranque-anonimizado.png'
+    if png_path.exists():
+        png = png_path.read_bytes()
+        offset, chunks = 8, []
+        while offset + 12 <= len(png):
+            length = struct.unpack('>I', png[offset:offset + 4])[0]
+            chunks.append(png[offset + 4:offset + 8].decode('ascii', errors='replace'))
+            offset += length + 12
+        forbidden = {'tEXt', 'iTXt', 'zTXt', 'eXIf'}
+        if forbidden.intersection(chunks):
+            errors.append('Metadatos adicionales en PNG anonimizado; revisar.')
+        counts['png_anonimizado_sin_texto_exif'] = not forbidden.intersection(chunks)
+    else:
+        counts['png_anonimizado'] = 'omitido: artefacto público no disponible en esta base'
 
-    with (ROOT / 'docs/revision/inventario-previo.csv').open(encoding='utf-8-sig', newline='') as handle:
-        original = list(csv.DictReader(handle))
-    moves = {row['origen']: row['destino'] for row in mappings}
-    moves['redes/publicaciones_simuladas.txt'] = 'redes/README_osint.md'
-    for row in original:
-        path = ROOT / moves.get(row['path'], row['path'])
-        if not path.exists():
-            errors.append('Original sin destino: ' + row['path'])
-        if path.suffix.lower() in {'.pdf', '.pptx'} and sha256(path).lower() != row['sha256'].lower():
-            errors.append('Documento binario original alterado: ' + row['path'])
-        if row['path'] in {'emailscorp/aiaco_corporate_emails.csv', 'scripts/fault.json'} and sha256(path).lower() != row['sha256'].lower():
-            errors.append('Datos originales alterados: ' + row['path'])
-    counts['archivos_originales_localizados'] = len(original)
+    inventory = ROOT / 'docs/revision/inventario-previo.csv'
+    if inventory.exists() and classification.exists():
+        with inventory.open(encoding='utf-8-sig', newline='') as handle:
+            original = list(csv.DictReader(handle))
+        moves = {row['origen']: row['destino'] for row in mappings}
+        moves['redes/publicaciones_simuladas.txt'] = 'redes/README_osint.md'
+        for row in original:
+            path = ROOT / moves.get(row['path'], row['path'])
+            if not path.exists():
+                errors.append('Original sin destino: ' + row['path'])
+            if path.suffix.lower() in {'.pdf', '.pptx'} and sha256(path).lower() != row['sha256'].lower():
+                errors.append('Documento binario original alterado: ' + row['path'])
+            if row['path'] in {'emailscorp/aiaco_corporate_emails.csv', 'scripts/fault.json'} and sha256(path).lower() != row['sha256'].lower():
+                errors.append('Datos originales alterados: ' + row['path'])
+        counts['archivos_originales_localizados'] = len(original)
+    else:
+        counts['inventario_historico'] = 'omitido: insumos privados no disponibles'
 
     with (ROOT / 'emailscorp/aiaco_corporate_emails.csv').open(encoding='utf-8-sig', newline='') as handle:
         reader = csv.DictReader(handle)
@@ -132,6 +153,14 @@ def validate():
     if 'SELECT id, email, password_md5, NULL FROM leaked_credentials' not in sql:
         errors.append('La proyección de saneamiento no excluye texto plano.')
     counts['sql'] = 'Fixtures cotejados; revisión textual no destructiva. No es validación del motor MySQL.'
+
+    tracked = subprocess.run(
+        ['git', 'ls-files', '-z'], cwd=ROOT, check=True, capture_output=True, text=False
+    ).stdout.decode('utf-8', errors='replace').split('\0')
+    temporary = [path for path in tracked if Path(path).name.startswith('~$')]
+    if temporary:
+        errors.append('Archivo temporal de Office rastreado: ' + ', '.join(temporary))
+    counts['archivos_temporales_rastreados'] = len(temporary)
 
     patterns = [rb'(?:AKIA|ASIA)[A-Z0-9]{16}', rb'-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----', rb'gh[pousr]_[A-Za-z0-9]{30,}', rb'\bsk-[A-Za-z0-9]{30,}']
     text_suffixes = {'.md', '.txt', '.sql', '.json', '.yml', '.yaml', '.py', '.ps1', '.csv'}
